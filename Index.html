@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado de Albion Online</title>
+    <style>
+        /* styles.css */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #searchInput {
+            padding: 10px;
+            font-size: 1rem;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        #searchButton {
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #333;
+            color: white;
+            border: none;
+        }
+
+        #marketTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #marketTable th, #marketTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Precios del Mercado - Albion Online</h1>
+        <p>Consulta los precios más recientes de los objetos en el mercado de Albion Online.</p>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar objeto..." />
+            <button id="searchButton">Buscar</button>
+        </div>
+
+        <table id="marketTable">
+            <thead>
+                <tr>
+                    <th>Objeto</th>
+                    <th>Precio</th>
+                    <th>Ciudad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los resultados se cargarán aquí -->
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>Desarrollado por [Tu nombre]</p>
+    </footer>
+
+    <script>
+        // script.js
+
+        // URL de la API de precios del mercado de Albion Online
+        const apiUrl = 'https://www.albion-online-data.com/api/v2/stats/prices/T4_BAG.json'; // Cambiar según lo que busques
+
+        // Función para obtener los datos y actualizarlos en la tabla
+        function fetchMarketData() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector("#marketTable tbody");
+                    tableBody.innerHTML = '';  // Limpiar la tabla
+
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+
+                        const itemCell = document.createElement('td');
+                        itemCell.textContent = item.item_id;
+                        row.appendChild(itemCell);
+
+                        const priceCell = document.createElement('td');
+                        priceCell.textContent = item.sell_price_min;
+                        row.appendChild(priceCell);
+
+                        const cityCell = document.createElement('td');
+                        cityCell.textContent = item.city;
+                        row.appendChild(cityCell);
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching market data:', error));
+        }
+
+        // Función para manejar la búsqueda
+        function searchMarketData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#marketTable tbody tr');
+
+            rows.forEach(row => {
+                const itemName = row.querySelector('td').textContent.toLowerCase();
+                if (itemName.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Agregar evento de búsqueda
+        document.getElementById('searchButton').addEventListener('click', searchMarketData);
+
+        // Obtener los datos del mercado al cargar la página
+        window.onload = fetchMarketData;
+    </script>
+</body>
+</html>
